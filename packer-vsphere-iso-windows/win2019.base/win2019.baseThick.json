@@ -1,0 +1,92 @@
+{
+  "variables": {
+
+    "vsphere-datacenter": "iono-dc",
+    "vsphere-cluster": "iono-wkld",
+    "vsphere-datastore": "iono-ds-vsan01",
+    "vsphere-network": "VLAN301",
+    "vsphere-folder": "Templates",
+
+    "vm-name": "Win2019-Template-Base-Thick-using-vmadmin-account",
+    "vm-cpu-num": "2",
+    "vm-mem-size": "4096",
+    "vm-disk-size": "40960",
+    "winadmin-password": "IOn0#L@b2020",
+    "os_iso_path": "[iono-ds-vsan01] ISO/SW_DVD9_Win_Server_STD_CORE_2019_1809.x_64Bit_English_DC_STD_MLF_X22-41335.ISO"
+  },
+
+  "sensitive-variables": ["vsphere_password", "winadmin_password"],
+
+  "builders": [
+  {
+    "ip_wait_timeout": "1h",
+    "type": "vsphere-iso",
+
+    "vcenter_server": "{{user `vsphere-server`}}",
+    "username": "{{user `vsphere-user`}}",
+    "password": "{{user `vsphere-password`}}",
+    "insecure_connection": "true",
+
+    "datacenter": "{{user `vsphere-datacenter`}}",
+    "cluster": "{{user `vsphere-cluster`}}",
+    "datastore": "{{user `vsphere-datastore`}}",
+    "folder": "{{user `vsphere-folder`}}",
+
+    "communicator": "winrm",
+    "winrm_no_proxy": true,
+    "winrm_insecure": true,
+    "winrm_username": "Administrator",
+    "winrm_password": "{{user `winadmin-password`}}",
+
+    "convert_to_template": "true",
+
+    "vm_name": "{{user `vm-name`}}",
+    "notes": "Build via Packer",
+
+    "guest_os_type": "windows9Server64Guest",
+
+    "CPUs": "{{user `vm-cpu-num`}}",
+    "RAM": "{{user `vm-mem-size`}}",
+    "RAM_reserve_all": true,
+    "firmware": "bios",
+
+    "disk_controller_type": "lsilogic-sas",
+    "storage": [
+      {
+        "disk_size": "{{user `vm-disk-size`}}",
+        "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}"
+      }
+    ],
+
+    "network_adapters": [
+      {
+        "network": "{{user `vsphere-network`}}",
+        "network_card": "vmxnet3"
+      }
+    ],
+
+    "iso_paths": [
+      "{{user `os_iso_path`}}",
+      "[] /vmimages/tools-isoimages/windows.iso"
+    ],
+
+    "floppy_files": [
+        "autounattend.xml",
+        "../scripts/disable-network-discovery.cmd",
+        "../scripts/winrmConfig1.ps1",
+        "../scripts/enable-rdp.cmd",
+        "../scripts/install-vm-tools.cmd",
+        "../scripts/set-temp.ps1",
+        "../scripts/chocolatey.ps1",
+        "../scripts/Ansible-WinRM.ps1"
+        ]
+      }
+    ],
+
+    "provisioners": [
+      {
+        "type": "windows-shell",
+        "inline": ["ipconfig"]
+      }
+    ]
+}

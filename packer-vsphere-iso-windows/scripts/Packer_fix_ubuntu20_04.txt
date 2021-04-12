@@ -1,0 +1,90 @@
+{
+  "builders": [
+    {
+      "CPUs": "{{user `vm-cpu-num`}}",
+      "RAM": "{{user `vm-mem-size`}}",
+      "RAM_reserve_all": true,
+      "boot_command": [
+        "<enter><wait><f6><wait><esc><wait>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs>",
+        "/install/vmlinuz",
+        " initrd=/install/initrd.gz",
+        " priority=critical",
+        " locale=en_US",
+        " preseed/file=/floppy/sample-preseed.cfg",
+        "<enter>"
+      ],
+      "boot_order": "disk,cdrom",
+      "boot_wait": "2s",
+      "cluster": "{{user `cluster`}}",
+      "convert_to_template": "true",
+      "datacenter": "{{user `datacenter`}}",
+      "datastore": "{{user `datastore`}}",
+      "disk_controller_type": "pvscsi",
+      "floppy_files": [
+        "./sample-preseed.cfg"
+      ],
+      "folder": "{{user `folder`}}",
+      "guest_os_type": "ubuntu64Guest",
+      "host": "{{user `host`}}",
+      "insecure_connection": "true",
+      "iso_paths": [
+        "{{user `iso_url`}}"
+      ],
+      "network_adapters": [
+        {
+          "network": "{{user `network`}}",
+          "network_card": "vmxnet3"
+        }
+      ],
+      "password": "{{user `vcenter-password`}}",
+      "ssh_password": "{{user `ssh-password`}}",
+      "ssh_username": "{{user `ssh-username`}}",
+      "storage": [
+        {
+          "disk_size": "{{user `vm-disk-size`}}",
+          "disk_thin_provisioned": true
+        }
+      ],
+      "type": "vsphere-iso",
+      "username": "{{user `vcenter-username`}}",
+      "vcenter_server": "{{user `vcenter-server`}}",
+      "vm_name": "{{user `vm-name`}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "inline": [
+        "sudo rm /etc/machine-id",
+        "sudo touch /etc/machine-id",
+        "echo 'Packer Template Build -- Complete'"
+      ],
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "cluster": "iono-wkld",
+    "datacenter": "iono-dc",
+    "datastore": "iono-ds-vsan01",
+    "folder": "Templates",
+    "iso_url": "[iono-ds-vsan01] ISO/ubuntu-20.04.1-live-server-amd64.iso",
+    "network": "VLAN301",
+    "ssh-password": "password",
+    "ssh-username": "packer",
+    "vcenter-password": "Welcome@123",
+    "vcenter-server": "172.16.30.100",
+    "vcenter-username": "vmadmin@ionocloud.local",
+    "vm-cpu-num": "1",
+    "vm-disk-size": "10240",
+    "vm-mem-size": "1024",
+    "vm-name": "Ubuntu-20.04-Template"
+  }
+}

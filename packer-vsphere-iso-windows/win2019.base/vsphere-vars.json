@@ -1,0 +1,6 @@
+{
+  "vsphere-server": "172.16.30.100",
+  "vsphere-user": "vmadmin@ionocloud.local",
+  "vsphere-password": "Welcome@123",
+  "disk_thin_provisioned" : "true"
+}
